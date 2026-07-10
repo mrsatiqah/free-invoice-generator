@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Generator — Percuma untuk Small Business</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#25313C;
+    --sage:#7FA8A5;
+    --cream-1:#FBEBDA;
+    --cream-2:#F6D9B4;
+    --orange:#E2622C;
+    --gray-bg:#F4F4F4;
+    --white:#FFFFFF;
+    --border:#DDE3E2;
+    --text:#25313C;
+    --muted:#64748B;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--gray-bg);
+    font-family:'DM Sans', sans-serif;
+    color:var(--text);
+    padding:24px 12px 80px;
+  }
+  h1,h2,h3,.brand-name,.invoice-title{
+    font-family:'Plus Jakarta Sans', sans-serif;
+  }
+  .toolbar{
+    max-width:900px;
+    margin:0 auto 20px;
+    background:var(--white);
+    border-radius:var(--radius);
+    padding:16px 20px;
+    box-shadow:0 1px 3px rgba(37,49,60,0.08);
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .toolbar-title{
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--navy);
+  }
+  .toolbar-title span{
+    display:block;
+    font-family:'DM Sans', sans-serif;
+    font-weight:400;
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .btn{
+    font-family:'DM Sans', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    border:none;
+    border-radius:8px;
+    padding:10px 16px;
+    cursor:pointer;
+    transition:opacity .15s ease, transform .05s ease;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--orange); color:#fff;}
+  .btn-primary:hover{opacity:.9;}
+  .btn-secondary{background:var(--sage); color:#fff;}
+  .btn-secondary:hover{opacity:.9;}
+  .btn-ghost{background:transparent; color:var(--navy); border:1.5px solid var(--border);}
+  .btn-ghost:hover{background:var(--gray-bg);}
+  .btn-danger{background:#fff; color:var(--orange); border:1.5px solid var(--orange); padding:6px 10px; font-size:13px;}
+
+  .sheet{
+    max-width:900px;
+    margin:0 auto;
+    background:var(--white);
+    border-radius:var(--radius);
+    box-shadow:0 1px 3px rgba(37,49,60,0.08);
+    padding:40px 48px;
+  }
+
+  .invoice-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    border-bottom:3px solid var(--navy);
+    padding-bottom:24px;
+    margin-bottom:28px;
+  }
+  .logo-zone{
+    width:180px;
+    height:90px;
+    border:2px dashed var(--border);
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    background:var(--gray-bg);
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .logo-zone img{width:100%;height:100%;object-fit:contain;}
+  .logo-zone .logo-hint{font-size:11.5px;color:var(--muted);text-align:center;padding:8px; line-height:1.5;}
+  .logo-zone .logo-hint b{display:block; color:var(--navy); font-size:12.5px; margin-bottom:2px;}
+  .logo-zone input[type=file]{
+    position:absolute; inset:0; opacity:0; cursor:pointer;
+  }
+  .invoice-title-block{text-align:right;}
+  .invoice-title{
+    font-size:34px;
+    font-weight:800;
+    color:var(--orange);
+    letter-spacing:1px;
+    margin:0 0 8px;
+  }
+  .meta-row{
+    display:flex;
+    gap:8px;
+    justify-content:flex-end;
+    align-items:center;
+    font-size:13.5px;
+    margin-bottom:4px;
+    color:var(--muted);
+  }
+  .meta-row label{min-width:90px; text-align:right; font-weight:500;}
+  .meta-row input{
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:5px 8px;
+    font-family:'Fira Code', monospace;
+    font-size:13.5px;
+    color:var(--navy);
+    width:150px;
+    text-align:right;
+  }
+
+  .parties{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    margin-bottom:32px;
+  }
+  .party-card{
+    background:var(--gray-bg);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .party-label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color:var(--sage);
+    margin-bottom:8px;
+  }
+  .party-card.to .party-label{color:var(--orange);}
+  .editable-line{
+    width:100%;
+    border:none;
+    background:transparent;
+    font-family:'DM Sans', sans-serif;
+    font-size:14px;
+    color:var(--navy);
+    padding:3px 0;
+    resize:none;
+    display:block;
+  }
+  .editable-line.name{font-weight:700; font-size:16px;}
+  .editable-line:focus{outline:none; background:#fff; border-radius:4px; padding:3px 6px;}
+
+  table.items{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:8px;
+  }
+  table.items thead th{
+    background:var(--navy);
+    color:#fff;
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    font-weight:700;
+    padding:10px 10px;
+    text-align:left;
+  }
+  table.items thead th.num, table.items thead th.amt{text-align:right;}
+  table.items tbody td{
+    border-bottom:1px solid var(--border);
+    padding:8px 10px;
+    font-size:14px;
+    vertical-align:top;
+  }
+  table.items tbody tr:last-child td{border-bottom:2px solid var(--navy);}
+  table.items input, table.items textarea{
+    width:100%;
+    border:none;
+    background:transparent;
+    font-family:'DM Sans', sans-serif;
+    font-size:14px;
+    padding:3px 4px;
+    resize:none;
+  }
+  table.items input:focus, table.items textarea:focus{
+    outline:none; background:var(--gray-bg); border-radius:4px;
+  }
+  table.items .num-input{text-align:right; font-family:'Fira Code', monospace;}
+  table.items .amt-cell{
+    text-align:right;
+    font-family:'Fira Code', monospace;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  table.items .del-cell{width:36px; text-align:center;}
+
+  .add-row-btn{
+    margin:8px 0 24px;
+  }
+
+  .totals-wrap{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:32px;
+  }
+  .totals{
+    width:300px;
+  }
+  .totals-line{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 0;
+    font-size:14px;
+  }
+  .totals-line label{color:var(--muted);}
+  .totals-line input{
+    width:110px;
+    text-align:right;
+    border:none;
+    background:transparent;
+    font-family:'Fira Code', monospace;
+    font-size:14px;
+    color:var(--navy);
+  }
+  .totals-line input:focus{outline:none; background:var(--gray-bg); border-radius:4px;}
+  .totals-line.grand{
+    border-top:2px solid var(--navy);
+    margin-top:6px;
+    padding-top:12px;
+    font-size:19px;
+    font-weight:800;
+    color:var(--orange);
+  }
+  .totals-line.grand .amt{font-family:'Fira Code', monospace;}
+
+  .bottom-grid{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:32px;
+    margin-bottom:8px;
+  }
+  .section-label{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color:var(--sage);
+    margin-bottom:10px;
+  }
+  .payment-box{
+    background:var(--cream-1);
+    border-radius:8px;
+    padding:16px 18px;
+  }
+  .payment-line{
+    display:flex;
+    gap:8px;
+    font-size:13.5px;
+    margin-bottom:6px;
+  }
+  .payment-line label{min-width:100px; color:var(--muted); font-weight:500;}
+  .payment-line input, .payment-line textarea{
+    flex:1;
+    border:none;
+    background:transparent;
+    font-family:'DM Sans', sans-serif;
+    font-size:13.5px;
+    color:var(--navy);
+    resize:none;
+  }
+  .payment-line input:focus, .payment-line textarea:focus{outline:none; background:#fff; border-radius:4px; padding:2px 4px;}
+  .notes-area{
+    width:100%;
+    min-height:60px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px;
+    font-family:'DM Sans', sans-serif;
+    font-size:13.5px;
+    margin-top:8px;
+    resize:vertical;
+  }
+
+  .sign-box{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+  }
+  .sign-canvas-wrap{
+    width:100%;
+    max-width:260px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    background:var(--gray-bg);
+    position:relative;
+  }
+  #signCanvas{width:100%; height:100px; display:block; cursor:crosshair; border-radius:8px;}
+  .sign-tools{
+    display:flex;
+    gap:8px;
+    margin-top:6px;
+  }
+  .sign-tools button{
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:6px;
+    border:1px solid var(--border);
+    background:#fff;
+    cursor:pointer;
+    color:var(--navy);
+  }
+  .sign-line{
+    width:100%;
+    max-width:260px;
+    border-top:1.5px solid var(--navy);
+    margin-top:8px;
+    padding-top:6px;
+    text-align:center;
+  }
+  .sign-line input{
+    width:100%;
+    text-align:center;
+    border:none;
+    background:transparent;
+    font-family:'DM Sans', sans-serif;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .sign-line input:focus{outline:none;}
+  .sign-line .sub{font-size:11px; color:var(--muted); font-weight:400; margin-top:2px;}
+
+  .footer-strip{
+    margin-top:32px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .footer-strip input{
+    text-align:center;
+    border:none;
+    background:transparent;
+    font-family:'DM Sans', sans-serif;
+    font-size:12px;
+    color:var(--muted);
+    width:80%;
+  }
+  .footer-strip input:focus{outline:none; background:var(--gray-bg); border-radius:4px;}
+
+  .credit{
+    max-width:900px;
+    margin:16px auto 0;
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  /* Print styles */
+  @media print{
+    body{background:#fff; padding:0; margin:0;}
+    .toolbar{display:none;}
+    .credit{display:none;}
+    .sheet{
+      box-shadow:none;
+      border-radius:0;
+      padding:16mm;
+      max-width:100%;
+      margin:0;
+    }
+    .logo-zone{border:none; background:transparent;}
+    table.items input, .totals-line input, .payment-line input, .editable-line, .footer-strip input, .sign-line input{
+      background:transparent !important;
+    }
+    .del-cell, .add-row-btn{display:none !important;}
+    @page{ size:A4; margin:0; }
+  }
+
+  @media (max-width:720px){
+    .sheet{padding:24px 18px;}
+    .invoice-header{flex-direction:column;}
+    .invoice-title-block{text-align:left; width:100%;}
+    .meta-row{justify-content:space-between;}
+    .parties{grid-template-columns:1fr;}
+    .bottom-grid{grid-template-columns:1fr;}
+    .sign-box{align-items:flex-start;}
+    .sign-canvas-wrap, .sign-line{max-width:100%;}
+    table.items thead th:nth-child(2), table.items tbody td:nth-child(2){display:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-title">Invoice Generator
+    <span>Percuma untuk usahawan kecil — isi, cetak atau save PDF</span>
+  </div>
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
+    <button class="btn btn-secondary" onclick="addRow()">+ Tambah Item</button>
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet">
+
+  <div class="invoice-header">
+    <div class="logo-zone" id="logoZone">
+      <span class="logo-hint"><b>+ Muat naik logo</b>Saiz disyorkan: 400×200px (nisbah 2:1)<br>PNG latar lutsinar untuk hasil terbaik</span>
+      <input type="file" accept="image/*" id="logoInput" onchange="handleLogo(event)">
+    </div>
+    <div class="invoice-title-block">
+      <div class="invoice-title">INVOICE</div>
+      <div class="meta-row"><label>No. Invois</label><input type="text" value="INV-0001"></div>
+      <div class="meta-row"><label>Tarikh</label><input type="date" id="invDate"></div>
+      <div class="meta-row"><label>Tarikh Akhir</label><input type="date" id="dueDate"></div>
+    </div>
+  </div>
+
+  <div class="parties">
+    <div class="party-card from">
+      <div class="party-label">Daripada</div>
+      <input class="editable-line name" value="Nama Perniagaan Anda">
+      <textarea class="editable-line" rows="2">Alamat perniagaan anda</textarea>
+      <input class="editable-line" value="No. Telefon / WhatsApp">
+      <input class="editable-line" value="Emel (jika ada)">
+    </div>
+    <div class="party-card to">
+      <div class="party-label">Kepada</div>
+      <input class="editable-line name" value="Nama Pelanggan">
+      <textarea class="editable-line" rows="2">Alamat pelanggan</textarea>
+      <input class="editable-line" value="No. Telefon">
+      <input class="editable-line" value="Emel (jika ada)">
+    </div>
+  </div>
+
+  <table class="items" id="itemsTable">
+    <thead>
+      <tr>
+        <th style="width:42%">Perihal Produk / Servis</th>
+        <th class="num" style="width:10%">Kuantiti</th>
+        <th class="num" style="width:18%">Harga Seunit (RM)</th>
+        <th class="amt" style="width:18%">Jumlah (RM)</th>
+        <th class="del-cell"></th>
+      </tr>
+    </thead>
+    <tbody id="itemsBody">
+      <!-- rows injected by JS -->
+    </tbody>
+  </table>
+  <div class="add-row-btn">
+    <button class="btn btn-ghost" onclick="addRow()">+ Tambah Baris</button>
+  </div>
+
+  <div class="totals-wrap">
+    <div class="totals">
+      <div class="totals-line">
+        <label>Subtotal</label>
+        <input type="text" id="subtotal" readonly value="0.00">
+      </div>
+      <div class="totals-line">
+        <label>Diskaun (RM)</label>
+        <input type="number" id="discount" value="0" step="0.01" oninput="calcTotals()">
+      </div>
+      <div class="totals-line">
+        <label>Cukai / SST (%)</label>
+        <input type="number" id="taxPct" value="0" step="0.1" oninput="calcTotals()">
+      </div>
+      <div class="totals-line grand">
+        <label>Jumlah Perlu Bayar</label>
+        <span class="amt" id="grandTotal">RM 0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-grid">
+    <div>
+      <div class="section-label">Maklumat Pembayaran</div>
+      <div class="payment-box">
+        <div class="payment-line"><label>Bank</label><input value="Nama Bank"></div>
+        <div class="payment-line"><label>No. Akaun</label><input value="000-0000-0000"></div>
+        <div class="payment-line"><label>Nama Akaun</label><input value="Nama Pemilik Akaun"></div>
+        <div class="payment-line"><label>QR / e-Wallet</label><input value="cth: TnG, DuitNow (jika ada)"></div>
+      </div>
+      <textarea class="notes-area" placeholder="Nota tambahan (terma bayaran, tempoh penghantaran, dll.)"></textarea>
+    </div>
+
+    <div class="sign-box">
+      <div class="section-label" style="align-self:flex-end;">Tandatangan</div>
+      <div class="sign-canvas-wrap">
+        <canvas id="signCanvas"></canvas>
+      </div>
+      <div class="sign-tools">
+        <button onclick="clearSign()">Padam</button>
+        <label style="font-size:12px; padding:5px 10px; border:1px solid var(--border); border-radius:6px; background:#fff; cursor:pointer;">
+          Muat naik
+          <input type="file" accept="image/*" style="display:none;" onchange="handleSignUpload(event)">
+        </label>
+      </div>
+      <div class="sign-line">
+        <input value="Nama Penandatangan">
+        <div class="sub">Tandatangan Sah</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-strip">
+    <input value="Terima kasih atas urusniaga anda! · Sebarang pertanyaan, sila hubungi kami.">
+  </div>
+
+</div>
+
+<div class="credit">Dibina secara percuma untuk usahawan kecil Malaysia · Data tidak disimpan di server, semua di dalam pelayar anda sahaja.</div>
+
+<script>
+let rowCount = 0;
+
+function currency(n){
+  return (isNaN(n) ? 0 : n).toLocaleString('en-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function addRow(desc="", qty=1, price=0){
+  rowCount++;
+  const tbody = document.getElementById('itemsBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><textarea rows="1" oninput="autoGrow(this)">${desc}</textarea></td>
+    <td class="num"><input type="number" class="num-input qty" value="${qty}" min="0" step="1" oninput="calcTotals()"></td>
+    <td class="num"><input type="number" class="num-input price" value="${price}" min="0" step="0.01" oninput="calcTotals()"></td>
+    <td class="amt-cell"><span class="line-amt">0.00</span></td>
+    <td class="del-cell"><button class="btn-danger" onclick="this.closest('tr').remove(); calcTotals();">✕</button></td>
+  `;
+  tbody.appendChild(tr);
+  calcTotals();
+}
+
+function autoGrow(el){
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function calcTotals(){
+  const rows = document.querySelectorAll('#itemsBody tr');
+  let subtotal = 0;
+  rows.forEach(row => {
+    const qty = parseFloat(row.querySelector('.qty').value) || 0;
+    const price = parseFloat(row.querySelector('.price').value) || 0;
+    const amt = qty * price;
+    row.querySelector('.line-amt').textContent = currency(amt);
+    subtotal += amt;
+  });
+  const discount = parseFloat(document.getElementById('discount').value) || 0;
+  const taxPct = parseFloat(document.getElementById('taxPct').value) || 0;
+  const afterDiscount = Math.max(subtotal - discount, 0);
+  const tax = afterDiscount * (taxPct/100);
+  const grand = afterDiscount + tax;
+
+  document.getElementById('subtotal').value = currency(subtotal);
+  document.getElementById('grandTotal').textContent = 'RM ' + currency(grand);
+}
+
+function handleLogo(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const zone = document.getElementById('logoZone');
+    zone.innerHTML = `<img src="${ev.target.result}" alt="Logo">
+      <input type="file" accept="image/*" id="logoInput" onchange="handleLogo(event)" style="position:absolute; inset:0; opacity:0; cursor:pointer;">`;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetAll(){
+  if(confirm('Reset semua maklumat dalam invois ini?')){
+    location.reload();
+  }
+}
+
+// Signature pad
+let canvas, ctx, drawing = false;
+function initSignPad(){
+  canvas = document.getElementById('signCanvas');
+  function resize(){
+    const rect = canvas.getBoundingClientRect();
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = rect.width * ratio;
+    canvas.height = rect.height * ratio;
+    ctx = canvas.getContext('2d');
+    ctx.scale(ratio, ratio);
+    ctx.strokeStyle = '#25313C';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function pos(e){
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {x: clientX - rect.left, y: clientY - rect.top};
+  }
+  function start(e){
+    drawing = true;
+    const p = pos(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    e.preventDefault();
+  }
+  function move(e){
+    if(!drawing) return;
+    const p = pos(e);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    e.preventDefault();
+  }
+  function end(){ drawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+}
+
+function clearSign(){
+  const rect = canvas.getBoundingClientRect();
+  ctx.clearRect(0, 0, rect.width, rect.height);
+}
+
+function handleSignUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    const img = new Image();
+    img.onload = function(){
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0,0,rect.width,rect.height);
+      const scale = Math.min(rect.width/img.width, rect.height/img.height);
+      const w = img.width*scale, h = img.height*scale;
+      ctx.drawImage(img, (rect.width-w)/2, (rect.height-h)/2, w, h);
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// init
+document.addEventListener('DOMContentLoaded', function(){
+  const today = new Date();
+  const due = new Date();
+  due.setDate(due.getDate() + 7);
+  document.getElementById('invDate').value = today.toISOString().slice(0,10);
+  document.getElementById('dueDate').value = due.toISOString().slice(0,10);
+
+  addRow("Contoh: Madu Tualang 500g", 2, 45.00);
+  addRow("Contoh: Kos Penghantaran", 1, 8.00);
+
+  initSignPad();
+});
+</script>
+
+</body>
+</html>
