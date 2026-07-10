@@ -264,10 +264,10 @@
   .totals-line.grand .amt{font-family:'Fira Code', monospace;}
 
   .bottom-grid{
-    display:grid;
-    grid-template-columns:1.3fr 1fr;
-    gap:32px;
     margin-bottom:8px;
+  }
+  .bottom-grid .payment-col{
+    max-width:420px;
   }
   .section-label{
     font-size:11px;
@@ -311,55 +311,6 @@
     resize:vertical;
   }
 
-  .sign-box{
-    display:flex;
-    flex-direction:column;
-    align-items:flex-end;
-  }
-  .sign-canvas-wrap{
-    width:100%;
-    max-width:260px;
-    border:1px solid var(--border);
-    border-radius:8px;
-    background:var(--gray-bg);
-    position:relative;
-  }
-  #signCanvas{width:100%; height:100px; display:block; cursor:crosshair; border-radius:8px;}
-  .sign-tools{
-    display:flex;
-    gap:8px;
-    margin-top:6px;
-  }
-  .sign-tools button{
-    font-size:12px;
-    padding:5px 10px;
-    border-radius:6px;
-    border:1px solid var(--border);
-    background:#fff;
-    cursor:pointer;
-    color:var(--navy);
-  }
-  .sign-line{
-    width:100%;
-    max-width:260px;
-    border-top:1.5px solid var(--navy);
-    margin-top:8px;
-    padding-top:6px;
-    text-align:center;
-  }
-  .sign-line input{
-    width:100%;
-    text-align:center;
-    border:none;
-    background:transparent;
-    font-family:'DM Sans', sans-serif;
-    font-size:13.5px;
-    font-weight:700;
-    color:var(--navy);
-  }
-  .sign-line input:focus{outline:none;}
-  .sign-line .sub{font-size:11px; color:var(--muted); font-weight:400; margin-top:2px;}
-
   .footer-strip{
     margin-top:32px;
     padding-top:16px;
@@ -400,6 +351,7 @@
       margin:0;
     }
     .logo-zone{border:none; background:transparent;}
+    .logo-zone .logo-hint{display:none;}
     table.items input, .totals-line input, .payment-line input, .editable-line, .footer-strip input, .sign-line input{
       background:transparent !important;
     }
@@ -468,7 +420,7 @@
   <table class="items" id="itemsTable">
     <thead>
       <tr>
-        <th style="width:42%">Perihal Produk / Servis</th>
+        <th style="width:42%">Produk/Servis</th>
         <th class="num" style="width:10%">Kuantiti</th>
         <th class="num" style="width:18%">Harga Seunit (RM)</th>
         <th class="amt" style="width:18%">Jumlah (RM)</th>
@@ -505,7 +457,7 @@
   </div>
 
   <div class="bottom-grid">
-    <div>
+    <div class="payment-col">
       <div class="section-label">Maklumat Pembayaran</div>
       <div class="payment-box">
         <div class="payment-line"><label>Bank</label><input value="Nama Bank"></div>
@@ -514,24 +466,6 @@
         <div class="payment-line"><label>QR / e-Wallet</label><input value="cth: TnG, DuitNow (jika ada)"></div>
       </div>
       <textarea class="notes-area" placeholder="Nota tambahan (terma bayaran, tempoh penghantaran, dll.)"></textarea>
-    </div>
-
-    <div class="sign-box">
-      <div class="section-label" style="align-self:flex-end;">Tandatangan</div>
-      <div class="sign-canvas-wrap">
-        <canvas id="signCanvas"></canvas>
-      </div>
-      <div class="sign-tools">
-        <button onclick="clearSign()">Padam</button>
-        <label style="font-size:12px; padding:5px 10px; border:1px solid var(--border); border-radius:6px; background:#fff; cursor:pointer;">
-          Muat naik
-          <input type="file" accept="image/*" style="display:none;" onchange="handleSignUpload(event)">
-        </label>
-      </div>
-      <div class="sign-line">
-        <input value="Nama Penandatangan">
-        <div class="sub">Tandatangan Sah</div>
-      </div>
     </div>
   </div>
 
@@ -608,76 +542,6 @@ function resetAll(){
   }
 }
 
-// Signature pad
-let canvas, ctx, drawing = false;
-function initSignPad(){
-  canvas = document.getElementById('signCanvas');
-  function resize(){
-    const rect = canvas.getBoundingClientRect();
-    const ratio = window.devicePixelRatio || 1;
-    canvas.width = rect.width * ratio;
-    canvas.height = rect.height * ratio;
-    ctx = canvas.getContext('2d');
-    ctx.scale(ratio, ratio);
-    ctx.strokeStyle = '#25313C';
-    ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  function pos(e){
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return {x: clientX - rect.left, y: clientY - rect.top};
-  }
-  function start(e){
-    drawing = true;
-    const p = pos(e);
-    ctx.beginPath();
-    ctx.moveTo(p.x, p.y);
-    e.preventDefault();
-  }
-  function move(e){
-    if(!drawing) return;
-    const p = pos(e);
-    ctx.lineTo(p.x, p.y);
-    ctx.stroke();
-    e.preventDefault();
-  }
-  function end(){ drawing = false; }
-
-  canvas.addEventListener('mousedown', start);
-  canvas.addEventListener('mousemove', move);
-  window.addEventListener('mouseup', end);
-  canvas.addEventListener('touchstart', start, {passive:false});
-  canvas.addEventListener('touchmove', move, {passive:false});
-  canvas.addEventListener('touchend', end);
-}
-
-function clearSign(){
-  const rect = canvas.getBoundingClientRect();
-  ctx.clearRect(0, 0, rect.width, rect.height);
-}
-
-function handleSignUpload(e){
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev){
-    const img = new Image();
-    img.onload = function(){
-      const rect = canvas.getBoundingClientRect();
-      ctx.clearRect(0,0,rect.width,rect.height);
-      const scale = Math.min(rect.width/img.width, rect.height/img.height);
-      const w = img.width*scale, h = img.height*scale;
-      ctx.drawImage(img, (rect.width-w)/2, (rect.height-h)/2, w, h);
-    };
-    img.src = ev.target.result;
-  };
-  reader.readAsDataURL(file);
-}
 
 // init
 document.addEventListener('DOMContentLoaded', function(){
@@ -689,8 +553,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
   addRow("Contoh: Madu Tualang 500g", 2, 45.00);
   addRow("Contoh: Kos Penghantaran", 1, 8.00);
-
-  initSignPad();
 });
 </script>
 
