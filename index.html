@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice Generator — Percuma untuk Small Business</title>
+<title>Invoice Generator Percuma — Mrs Atiqah</title>
+<meta name="description" content="Invoice generator percuma untuk usahawan kecil Malaysia. Isi maklumat, letak logo, kira total automatik, terus print atau save sebagai PDF. Tiada login, tiada data disimpan.">
+<meta name="keywords" content="invoice generator percuma, invois online, invois usahawan kecil, invoice maker malaysia, template invois, save invoice as pdf">
+<meta name="author" content="Mrs Atiqah">
+<link rel="canonical" href="https://mrsatiqah.github.io/free-invoice-generator/">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Invoice Generator Percuma — Mrs Atiqah">
+<meta property="og:description" content="Buat invois profesional dalam saat — percuma untuk usahawan kecil. Print atau save sebagai PDF terus dari pelayar.">
+<meta property="og:url" content="https://mrsatiqah.github.io/free-invoice-generator/">
+<meta property="og:site_name" content="Mrs Atiqah">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Invoice Generator Percuma — Mrs Atiqah">
+<meta name="twitter:description" content="Buat invois profesional dalam saat — percuma untuk usahawan kecil. Print atau save sebagai PDF terus dari pelayar.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -59,6 +74,16 @@
     color:var(--muted);
     margin-top:2px;
   }
+  .home-link{
+    display:inline-block;
+    font-family:'DM Sans', sans-serif;
+    font-weight:600;
+    font-size:12px;
+    color:var(--sage);
+    text-decoration:none;
+    margin-bottom:4px;
+  }
+  .home-link:hover{color:var(--orange); text-decoration:underline;}
   .btn{
     font-family:'DM Sans', sans-serif;
     font-weight:700;
@@ -373,9 +398,16 @@
 
     .parties{grid-template-columns:1fr; gap:16px;}
 
-    table.items{font-size:13px;}
-    table.items thead th:nth-child(2), table.items tbody td:nth-child(2){display:none;}
-    table.items thead th, table.items tbody td{padding:8px 6px;}
+    table.items{font-size:12px;}
+    table.items thead th{padding:7px 4px; font-size:10.5px;}
+    table.items tbody td{padding:6px 4px;}
+    table.items thead th:nth-child(1){width:32% !important;}
+    table.items thead th:nth-child(2){width:14% !important;}
+    table.items thead th:nth-child(3){width:22% !important;}
+    table.items thead th:nth-child(4){width:22% !important;}
+    table.items .del-cell{width:24px !important;}
+    table.items .btn-danger{padding:3px 6px; font-size:11px;}
+    table.items textarea{font-size:13px !important;}
 
     .totals-wrap{justify-content:stretch;}
     .totals{width:100%;}
@@ -396,7 +428,9 @@
 <body>
 
 <div class="toolbar">
-  <div class="toolbar-title">Invoice Generator
+  <div class="toolbar-title">
+    <a href="https://mrsatiqah.github.io" class="home-link">← mrsatiqah.github.io</a>
+    <div>Invoice Generator</div>
     <span>Percuma untuk usahawan kecil — isi, cetak atau save PDF</span>
   </div>
   <div style="display:flex; gap:10px; flex-wrap:wrap;">
