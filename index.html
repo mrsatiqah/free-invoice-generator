@@ -19,6 +19,9 @@
 <meta name="twitter:title" content="Invoice Generator Percuma — Mrs Atiqah">
 <meta name="twitter:description" content="Buat invois profesional dalam saat — percuma untuk usahawan kecil. Print atau save sebagai PDF terus dari pelayar.">
 
+<script data-goatcounter="https://mrsatiqah.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -501,23 +504,23 @@
 
 <div class="toolbar">
   <div class="toolbar-title">
-    <a href="https://mrsatiqah.github.io" class="home-link">← mrsatiqah.github.io</a>
+    <a href="https://mrsatiqah.github.io" class="home-link" onclick="trackEvent('click-home-link')">← mrsatiqah.github.io</a>
     <div>Invoice Generator</div>
     <span>Percuma untuk usahawan kecil — isi, cetak atau save PDF</span>
     <div class="share-row">
       <span class="share-label">Kongsi:</span>
-      <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F" target="_blank" rel="noopener" class="share-btn" title="Kongsi ke Facebook">Facebook</a>
-      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F&text=Invoice%20generator%20percuma%20untuk%20usahawan%20kecil%20%E2%80%94%20cuba%20sekarang!" target="_blank" rel="noopener" class="share-btn" title="Kongsi ke Twitter/X">Twitter/X</a>
-      <a href="https://www.threads.net/intent/post?text=Invoice%20generator%20percuma%20untuk%20usahawan%20kecil%20%E2%80%94%20cuba%20sekarang!%20https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F" target="_blank" rel="noopener" class="share-btn" title="Kongsi ke Threads">Threads</a>
-      <a href="mailto:?subject=Invoice%20Generator%20Percuma&body=Hai%2C%20saya%20nak%20kongsi%20invoice%20generator%20percuma%20ni%20untuk%20usahawan%20kecil%3A%20https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F" class="share-btn" title="Kongsi melalui Emel">Emel</a>
-      <a href="https://mrsatiqah.github.io/panduan-invoice-generator" target="_blank" rel="noopener" class="share-btn guide-btn" title="Panduan guna Invoice Generator">📖 Panduan</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F" target="_blank" rel="noopener" class="share-btn" title="Kongsi ke Facebook" onclick="trackEvent('share-facebook')">Facebook</a>
+      <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F&text=Invoice%20generator%20percuma%20untuk%20usahawan%20kecil%20%E2%80%94%20cuba%20sekarang!" target="_blank" rel="noopener" class="share-btn" title="Kongsi ke Twitter/X" onclick="trackEvent('share-twitter')">Twitter/X</a>
+      <a href="https://www.threads.net/intent/post?text=Invoice%20generator%20percuma%20untuk%20usahawan%20kecil%20%E2%80%94%20cuba%20sekarang!%20https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F" target="_blank" rel="noopener" class="share-btn" title="Kongsi ke Threads" onclick="trackEvent('share-threads')">Threads</a>
+      <a href="mailto:?subject=Invoice%20Generator%20Percuma&body=Hai%2C%20saya%20nak%20kongsi%20invoice%20generator%20percuma%20ni%20untuk%20usahawan%20kecil%3A%20https%3A%2F%2Fmrsatiqah.github.io%2Ffree-invoice-generator%2F" class="share-btn" title="Kongsi melalui Emel" onclick="trackEvent('share-email')">Emel</a>
+      <a href="https://mrsatiqah.github.io/panduan-invoice-generator/" target="_blank" rel="noopener" class="share-btn guide-btn" title="Panduan guna Invoice Generator" onclick="trackEvent('click-guide-link')">📖 Panduan</a>
     </div>
   </div>
   <div style="display:flex; gap:10px; flex-wrap:wrap;">
-    <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
-    <button class="btn btn-secondary" onclick="addRow()">+ Tambah Item</button>
-    <button class="btn btn-secondary" id="modeToggleBtn" onclick="toggleReceiptMode()"> Jana sebagai Resit</button>
-    <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <button class="btn btn-ghost" onclick="trackEvent('click-reset'); resetAll()">Reset</button>
+    <button class="btn btn-secondary" onclick="trackEvent('click-add-item'); addRow()">+ Tambah Item</button>
+    <button class="btn btn-secondary" id="modeToggleBtn" onclick="toggleReceiptMode()">🧾 Jana sebagai Resit</button>
+    <button class="btn btn-primary" onclick="trackEvent('click-print-pdf'); window.print()">🖨️ Print / Save as PDF</button>
   </div>
 </div>
 
@@ -569,7 +572,7 @@
     </tbody>
   </table>
   <div class="add-row-btn">
-    <button class="btn btn-ghost" onclick="addRow()">+ Tambah Baris</button>
+    <button class="btn btn-ghost" onclick="trackEvent('click-add-item'); addRow()">+ Tambah Baris</button>
   </div>
 
   <div class="totals-wrap">
@@ -616,6 +619,15 @@
 <script>
 let rowCount = 0;
 
+function trackEvent(name){
+  try{
+    if(window.goatcounter && window.goatcounter.count){
+      window.goatcounter.count({ path: name, event: true });
+    }
+  } catch(e){ /* tracking should never break the app */ }
+}
+
+
 function currency(n){
   return (isNaN(n) ? 0 : n).toLocaleString('en-MY', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
@@ -629,7 +641,7 @@ function addRow(desc="", qty=1, price=0){
     <td class="num"><input type="number" class="num-input qty" value="${qty}" min="0" step="1" oninput="calcTotals()"></td>
     <td class="num"><input type="number" class="num-input price" value="${price}" min="0" step="0.01" oninput="calcTotals()"></td>
     <td class="amt-cell"><span class="line-amt">0.00</span></td>
-    <td class="del-cell"><button class="btn-danger" onclick="this.closest('tr').remove(); calcTotals();">✕</button></td>
+    <td class="del-cell"><button class="btn-danger" onclick="trackEvent('click-delete-row'); this.closest('tr').remove(); calcTotals();">✕</button></td>
   `;
   tbody.appendChild(tr);
   calcTotals();
@@ -663,6 +675,7 @@ function calcTotals(){
 function handleLogo(e){
   const file = e.target.files[0];
   if(!file) return;
+  trackEvent('upload-logo');
   const reader = new FileReader();
   reader.onload = function(ev){
     const zone = document.getElementById('logoZone');
@@ -675,6 +688,7 @@ function handleLogo(e){
 function toggleReceiptMode(){
   const body = document.body;
   const isReceipt = body.classList.toggle('mode-receipt');
+  trackEvent(isReceipt ? 'click-mode-receipt' : 'click-mode-invoice');
   const btn = document.getElementById('modeToggleBtn');
   const docTitle = document.getElementById('docTitle');
   const docNumLabel = document.getElementById('docNumLabel');
@@ -691,7 +705,7 @@ function toggleReceiptMode(){
     docTitle.textContent = 'INVOICE';
     docNumLabel.textContent = 'No. Invois';
     grandLabel.textContent = 'Jumlah Perlu Bayar';
-    btn.textContent = ' Jana sebagai Resit';
+    btn.textContent = '🧾 Jana sebagai Resit';
     btn.classList.remove('active');
   }
 }
