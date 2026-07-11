@@ -138,6 +138,8 @@
     border-radius:var(--radius);
     box-shadow:0 1px 3px rgba(37,49,60,0.08);
     padding:40px 48px;
+    position:relative;
+    overflow:hidden;
   }
 
   .invoice-header{
@@ -149,6 +151,36 @@
     padding-bottom:24px;
     margin-bottom:28px;
   }
+  .paid-stamp{
+    position:absolute;
+    top:26px;
+    right:-58px;
+    width:230px;
+    display:none;
+    text-align:center;
+    background:var(--orange);
+    color:#fff;
+    font-family:'Plus Jakarta Sans', sans-serif;
+    font-weight:800;
+    font-size:16px;
+    letter-spacing:2px;
+    padding:6px 0 5px;
+    transform:rotate(40deg);
+    box-shadow:0 2px 6px rgba(0,0,0,0.18);
+    z-index:5;
+    pointer-events:none;
+  }
+  .paid-stamp span{
+    display:block;
+    font-size:10px;
+    letter-spacing:3px;
+    font-weight:600;
+    opacity:.9;
+    margin-top:1px;
+  }
+  body.mode-receipt .paid-stamp{display:block;}
+  body.mode-receipt #paymentSection{display:none;}
+  #modeToggleBtn.active{background:var(--orange);}
   .logo-zone{
     width:180px;
     height:90px;
@@ -449,6 +481,18 @@
     .toolbar{flex-direction:column; align-items:stretch; text-align:center;}
     .toolbar > div{justify-content:center;}
     .btn{flex:1;}
+
+    .paid-stamp{
+      position:static;
+      transform:rotate(0deg);
+      margin:0 auto 16px;
+      width:auto;
+      max-width:200px;
+      font-size:15px;
+      padding:6px 18px;
+      border-radius:6px;
+      box-shadow:none;
+    }
   }
 
 </style>
@@ -472,11 +516,13 @@
   <div style="display:flex; gap:10px; flex-wrap:wrap;">
     <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
     <button class="btn btn-secondary" onclick="addRow()">+ Tambah Item</button>
+    <button class="btn btn-secondary" id="modeToggleBtn" onclick="toggleReceiptMode()"> Jana sebagai Resit</button>
     <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
   </div>
 </div>
 
 <div class="sheet" id="sheet">
+  <div class="paid-stamp" id="paidStamp">RECEIPT<span>PAID</span></div>
 
   <div class="invoice-header">
     <div class="logo-zone" id="logoZone">
@@ -484,8 +530,8 @@
       <input type="file" accept="image/*" id="logoInput" onchange="handleLogo(event)">
     </div>
     <div class="invoice-title-block">
-      <div class="invoice-title">INVOICE</div>
-      <div class="meta-row"><label>No. Invois</label><input type="text" value="INV-0001"></div>
+      <div class="invoice-title" id="docTitle">INVOICE</div>
+      <div class="meta-row"><label id="docNumLabel">No. Invois</label><input type="text" value="INV-0001"></div>
       <div class="meta-row"><label>Tarikh</label><input type="date" id="invDate"></div>
       <div class="meta-row"><label>Tarikh Akhir</label><input type="date" id="dueDate"></div>
     </div>
@@ -541,14 +587,14 @@
         <input type="number" id="taxPct" value="0" step="0.1" oninput="calcTotals()">
       </div>
       <div class="totals-line grand">
-        <label>Jumlah Perlu Bayar</label>
+        <label id="grandLabel">Jumlah Perlu Bayar</label>
         <span class="amt" id="grandTotal">RM 0.00</span>
       </div>
     </div>
   </div>
 
   <div class="bottom-grid">
-    <div class="payment-col">
+    <div class="payment-col" id="paymentSection">
       <div class="section-label">Maklumat Pembayaran</div>
       <div class="payment-box">
         <div class="payment-line"><label>Bank</label><input value="Nama Bank"></div>
@@ -624,6 +670,30 @@ function handleLogo(e){
       <input type="file" accept="image/*" id="logoInput" onchange="handleLogo(event)" style="position:absolute; inset:0; opacity:0; cursor:pointer;">`;
   };
   reader.readAsDataURL(file);
+}
+
+function toggleReceiptMode(){
+  const body = document.body;
+  const isReceipt = body.classList.toggle('mode-receipt');
+  const btn = document.getElementById('modeToggleBtn');
+  const docTitle = document.getElementById('docTitle');
+  const docNumLabel = document.getElementById('docNumLabel');
+  const grandLabel = document.getElementById('grandLabel');
+
+  if(isReceipt){
+    docTitle.style.display = 'none';
+    docNumLabel.textContent = 'No. Resit';
+    grandLabel.textContent = 'Jumlah Dibayar';
+    btn.textContent = '↩️ Kembali ke Invois';
+    btn.classList.add('active');
+  } else {
+    docTitle.style.display = '';
+    docTitle.textContent = 'INVOICE';
+    docNumLabel.textContent = 'No. Invois';
+    grandLabel.textContent = 'Jumlah Perlu Bayar';
+    btn.textContent = ' Jana sebagai Resit';
+    btn.classList.remove('active');
+  }
 }
 
 function resetAll(){
